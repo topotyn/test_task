@@ -1,9 +1,9 @@
-class web_server::apache {
- package { 'httpd':
-  ensure => [installed, latest],
+class web_server::apache {  # создание класса в модуле
+ package { 'httpd': # указываю, что нужен пакет httpd
+  ensure => [installed, latest], # состояние пакета, установлен и последней версии
   }
- service { 'httpd':
+ service { 'httpd':  # проверяю что сервис httpd запущен
   ensure => running,
-  require => Package['httpd'],
+  require => Package['httpd'], # показываю, что сервис зависит от пакета httpd (сначало будет выполнен блок пакета)
  }
 }
