@@ -1,9 +1,9 @@
-class web_server::nginx { # создаю класс внутри модуля
+class web_server::nginx { # создание класса в модуле
  package { 'nginx': # указываю какой пакет нужно установить
-  ensure => [installed, latest], # указываю состояние пакета, установлен и последней версии
+  ensure => [installed, latest], # состояние пакета, установлен и последней версии
   }
- service { 'nginx': # указываю сервис с который нужно проверять на запуск
+ service { 'nginx': # указываем сервис для проверки его состояния
   ensure => true,
-  require => Package['nginx'], # сервис зависит от пакета nginx
+  require => Package['nginx'], # сервис зависит от пакета nginx (первым делом выполняется package)
  }
 }
