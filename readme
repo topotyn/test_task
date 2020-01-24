@@ -1,0 +1,57 @@
+Настройка тестовой среды для puppet
+1. Установить три машины centos 7
+2. Обновить все машины
+	yum update -y
+3. Сменить hostname всех машинах
+	hostnamectl set-hostname server.pup.com   #для сервера
+	hostnamectl set-hostname client1.pup.com   #для клиента1
+	hostnamectl set-hostname client2.pup.com   #для клиента2
+4. Перегрузить все машины
+5. Прописать в файле /etc/hosts зависимости 'ip address   hostname'  #ip address можно посмотреть командой 'ip a'
+	для сервера
+		vi /etc/hosts
+			ip address	client1.pup.com
+			ip address	client2.pup.com
+	для клиентов
+		vi /etc/hosts
+			ip address	server.pup.com
+6. Установить на всех машинах ntp	#для синхронизации времени
+	yum install ntp -y
+	systemctl enable ntpd && systemctl start ntpd
+7. Установить puppet
+	для сервера
+		rpm -Uvh https://yum.puppetlabs.com/puppet-release-el-7.noarch.rpm
+		yum install puppetserver -y
+		#Если на сервере мало оперативной памяти, поменять в файле /etc/sysconfig/puppetserver  (vi /etc/sysconfig/puppetserver)
+		#строку:	JAVA_ARGS="-Xms2g -Xmx2g -Djruby.logger.class=com.puppetlabs.jruby_utils.jruby.Slf4jLogger"
+		#на:	JAVA_ARGS="-Xms1g -Xmx1g -Djruby.logger.class=com.puppetlabs.jruby_utils.jruby.Slf4jLogger"
+		systemctl enable puppetserver && systemctl start puppetserver
+	для клиентов 
+		rpm -Uvh https://yum.puppetlabs.com/puppet-release-el-7.noarch.rpm
+		yum install puppet-agent -y
+		systemctl enable puppet && systemctl start puppet
+8. Открываем firewall port 8140 на всех машинах
+	firewall-cmd --permanent --add-port=8140/tcp
+	firewall-cmd --reload
+9. Для автоматической подписи сертификатов
+	echo '*.pup.com' > /etc/puppetlabs/puppet/autosign.conf
+10. Настройка агента
+	добавить в файл /etc/puppetlabs/puppet/puppet.conf
+		[agent]
+		server = server.pup.com
+		runinterval = 5m  # для быстрого результата
+11. Настройка сервера
+	создаём папку для модулей
+		mkdir -p /etc/puppetlabs/code/environments/production/modules/web_server/manifests
+		cd /etc/puppetlabs/code/environments/production/modules/web_server/manifests
+	копируем в неё файлы
+		apache.pp
+		epel.pp
+		nginx.pp
+	копируем в папку /etc/puppetlabs/code/environments/production/manifests файл
+		web_server.pp
+		
+# после данных манипуляций ждём 5 минут и проверяем результат (запущенные web_servers)
+	
+	
+	
