@@ -25,11 +25,9 @@
 		#Если на сервере мало оперативной памяти, поменять в файле /etc/sysconfig/puppetserver  (vi /etc/sysconfig/puppetserver)
 		#строку:	JAVA_ARGS="-Xms2g -Xmx2g -Djruby.logger.class=com.puppetlabs.jruby_utils.jruby.Slf4jLogger"
 		#на:	JAVA_ARGS="-Xms1g -Xmx1g -Djruby.logger.class=com.puppetlabs.jruby_utils.jruby.Slf4jLogger"
-		systemctl enable puppetserver && systemctl start puppetserver
 	для клиентов 
 		rpm -Uvh https://yum.puppetlabs.com/puppet-release-el-7.noarch.rpm
 		yum install puppet-agent -y
-		systemctl enable puppet && systemctl start puppet
 8. Открываем firewall port 8140 на всех машинах
 	firewall-cmd --permanent --add-port=8140/tcp
 	firewall-cmd --reload
@@ -50,6 +48,11 @@
 		nginx.pp
 	копируем в папку /etc/puppetlabs/code/environments/production/manifests файл
 		web_server.pp
+12. Старт
+	для сервера
+		systemctl enable puppetserver && systemctl start puppetserver
+	для клиентов
+		systemctl enable puppet && systemctl start puppet
 		
 # после данных манипуляций ждём 5 минут и проверяем результат (запущенные web_servers)
 	
